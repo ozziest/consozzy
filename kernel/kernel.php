@@ -302,17 +302,9 @@ class Kernel
 	private function help()
 	{
 		echo "\n";
-		echo "	history -> Komut geÃ§miÅŸi gÃ¶sterilir.. \n";
-		echo "	logon -> Debug modu loglarÄ± gÃ¶sterilir. \n";
-		echo "	logoff -> Debug modu loglarÄ± gizlenir. \n";
+		echo "	exit\n";
+		echo "	history\n";
 		echo "\n";
-		if (isset($this->config['helps']) && 
-			is_array($this->config['helps']) &&
-			sizeof($this->config['helps']) > 0) {
-			foreach ($this->config['helps'] as $key => $value) {
-				echo "	$key -> $value. \n";
-			}
-		}
 	}
 
 	/**
