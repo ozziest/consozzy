@@ -293,6 +293,19 @@ class Kernel
 	}
 
 	/**
+	* Clear
+	*
+	* Clear screen
+	*
+	* @return null
+	*/
+	public function clear() 
+	{
+	    $clearscreen = chr(27)."[H".chr(27)."[2J";
+	    print $clearscreen;
+	}
+
+	/**
 	* Help
 	*
 	* Show help content

@@ -1,6 +1,9 @@
 <?php if ( ! defined('CONSOLE')) exit('No direct script access allowed');
 
 $lang['cursor'] = '->';
+$lang['welcome'] = 'Consozzy Konsol Uygulaması';
+$lang['exit'] = 'Consozzy Konsol Uygulması kapatıldı!';
+
 $lang['error'] = 'Hata';
 $lang['warning'] = 'Uyarı';
 $lang['info'] = 'Bilgi';
@@ -14,5 +17,3 @@ $lang['classNotFound'] = 'Sınıf bulunamadı.';
 $lang['libraryNotFound'] = 'Kütüphane bulunamadı.';
 $lang['methodNotFound'] = 'Metot bulunamadı.';
 
-$lang['welcome'] = 'Consozzy Console Application';
-$lang['exit'] = 'Consozzy Console Application is closed!';
