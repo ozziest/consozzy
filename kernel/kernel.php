@@ -1,5 +1,14 @@
 <?php if ( ! defined('CONSOLE')) exit('No direct script access allowed');
-	
+
+/**
+ * Kernel
+ *
+ * @package     ozguradem
+ * @subpackage  Consozzy
+ * @category    Kernel
+ * @author      Ozgur Adem Isikli
+ * @link        https://github.com/ozguradem/consozzy
+ */
 class Kernel
 {
 
