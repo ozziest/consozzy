@@ -1,4 +1,13 @@
 Consozzy
 ========
 
-Consozzy Simple Console Application
+Consozzy Basit Konsol Uygulması
+
+***
+### Kullanım
+```bash
+
+$ php console.php
+
+
+```
