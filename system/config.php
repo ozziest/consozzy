@@ -27,8 +27,7 @@ $helps = array();
 *	0 - Disables All Messages
 * 	1 - Success Messages
 * 	2 - Informatin Messages
-*	3 - Warning Messages
-* 	4 - All Messages
+*	3 - Warning & All Messageses
 * 
 * @var integer
 */
