@@ -13,24 +13,30 @@ class Colors {
 
 	/**
 	* Foreground Colors
+	* 
+	* @var array
 	*/
 	private $foregroundColors = array();
 	
 	/**
 	* Background Colors
+	* 
+	* @var array
 	*/
 	private $backgroundColors = array();
 
 	/**
 	* Active
+	*
+	* @var boolean
 	*/
-	private $active;
+	private static $active = true;
 
 	/**
 	* Construct method 
 	*/
 	public function __construct($active) {
-		$this->active = $active;
+		self::$active = $active;
 		// Set up shell colors
 		$this->foregroundColors['black'] = '0;30';
 		$this->foregroundColors['dark_gray'] = '1;30';
@@ -57,7 +63,18 @@ class Colors {
 		$this->backgroundColors['cyan'] = '46';
 		$this->backgroundColors['light_gray'] = '47';
 	}
- 
+ 	
+ 	/**
+ 	* Set Active
+ 	*
+ 	* @param  boolean $status
+ 	* @return null
+ 	*/
+	public function setActive($status)
+	{
+		self::$active = $status;
+	}
+
 	/**
 	* Get Colored String
 	*
@@ -69,7 +86,7 @@ class Colors {
 	public function getColoredString($string, $foregroundColor = null, $backgroundColor = null) {
 
 		// Colors is active?
-		if ($this->active !== true) {
+		if (self::$active !== true) {
 			return $string;
 		}
 

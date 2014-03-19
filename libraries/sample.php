@@ -9,23 +9,8 @@
  * @author      Ozgur Adem Isikli
  * @link        https://github.com/ozguradem/consozzy
  */
-class Sample
+class Sample extends Kernel 
 {
-
-	/**
-	* Kernel
-	*/
-	private $kernel;
-
-	/**
-	* Construct 
-	*
-	* Setting kernel variable
-	*/
-	public function __construct(&$kernel)
-	{
-		$this->kernel = $kernel;
-	}
 
 	/**
 	* Test
@@ -35,7 +20,7 @@ class Sample
 	public function test($params)
 	{
 		// Show success message
-		$this->kernel->success('Everything is ok');
+		$this->success('Everything is ok');
 	}
 
 }

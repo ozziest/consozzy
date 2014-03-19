@@ -55,147 +55,82 @@ class Kernel
 	*
 	* @var integer
 	*/
-	public $userMessageStatus;
+	private static $userMessageStatus;
 
 	/**
 	* User Error Message Status
 	*
 	* @var boolean
 	*/
-	public $userErrorMessageStatus;
+	private static $userErrorMessageStatus;
 
 	/**
 	* Color Status Variable
 	*
 	* @var boolean
 	*/
-	private $colorStatus;
+	private static $colorStatus;
 
 	/**
-	* Loaded classes array
+	* Color Class Variable
+	*
+	* @var object
+	*/
+	private static $color;
+
+	/**
+	* Lang Values
 	*
 	* @var array
 	*/
-	private $loadedClasses = array();
+	public static $lang;
+
 
 	/**
-	* Init
+	* Set Error Message Status
 	*
-	* Konsol uygulamasÄ±nÄ±n kurulmasÄ± iÅŸlemi.
-	* 
+	* @param  boolean $status
 	* @return null
 	*/
-	public function __construct()
+	public function setErrorMessageStatus($status)
 	{
-		
-		/**
-		* Load configuration settings
-		*/
-		require_once('config.php');
-		$this->helps = $helps;
-		$this->languageSelection = $language;
-		$this->userMessageStatus = $userMessageStatus;
-		$this->userErrorMessageStatus = $userErrorMessageStatus;
-		$this->colorStatus = $colorStatus;
-
-		/**
-		* Load Colors Class
-		*/
-		require_once(KERNEL.'/colors.php');		
-		$this->color = new Colors($this->colorStatus);
-
-		/**
-		* Load language file
-		*/
-		if (!file_exists("language/$language.php")) {
-			die("Language file is not found.\n");
-		} else {
-			require_once("language/$language.php");
-			$this->lang = $lang;
-		}
-
-		/**
-		* Setting error handler
-		*/
-		set_error_handler(array($this, 'errorHandler'));
-
-		/**
-		* Starting listener
-		*/
-		$this->listener();
+		self::$userErrorMessageStatus = $status;
 	}
 
 	/**
-	* Error Handler
-	* 
-	* OluÅŸan hatalarÄ±n yakanlandÄ±ÄŸÄ± bÃ¶lÃ¼m.
+	* Set User Message Status
 	*
-	* @param  string $no
-	* @param  string $str
-	* @param  string $file
-	* @param  string $line
+	* @param  boolean $status
 	* @return null
 	*/
-	public function errorHandler($no = 0, $str, $file = 0, $line = 0)
+	public function setUserMessageStatus($status)
 	{
-		$this->error($str);
+		self::$userMessageStatus = $status;
 	}
 
 	/**
-	* Lang
+	* Set Color Status
 	*
-	* Write lang message to console
-	*
-	* @param  string $key
-	* @param  string $color
-	* @return boolean
+	* @param  boolean $status
+	* @return null
 	*/
-	public function lang($key, $color = null)
-	{	
-		echo $this->color->getColoredString($this->getLang($key), $color, null)."\n";						
-		return true;
-	}
-
-	/**
-	* Message 
-	*
-	* Show message
-	*
-	* @param  string $level
-	* @param  string $text
-	* @param  string $color
-	* @param  null
-	*/
-	private function message($level, $text, $color = null)
+	public function setColorStatus($status)
 	{
-		// Checking lang message
-		$level = $this->getLang($level);
-		if (substr($text, 0, 5) == 'lang:') {
-			// Check lang key is defined			
-			if (isset($this->lang[substr($text, 5)])) {
-				$text = $this->lang[substr($text, 5)]; 				
-			} else {
-				echo "	CRITICAL: Lang key is not found (language/$this->languageSelection.php): $text \n";
-				return false;
-			}
-		}
-		// Write message
-		echo "	".$this->color->getColoredString($level.": ".$text, $color, null)."\n";
-		return true;
+		self::$color->setActive($status);
 	}
 
 	/**
 	* Error
 	*
-	* Show erroe message
+	* Show error message
 	* 
 	* @param  string $text
 	* @return boolean
 	*/
 	public function error($text)
 	{
-		if ($this->userErrorMessageStatus === true) {
-			$this->message('lang:error', $text, 'red');
+		if (self::$userErrorMessageStatus === true) {
+			$this->_message('lang:error', $text, 'red');
 		}
 	}
 
@@ -209,9 +144,52 @@ class Kernel
 	*/
 	public function warning($text)
 	{
-		if ($this->userMessageStatus >= 3) {
-			$this->message('lang:warning', $text, 'yellow');
+		if (self::$userMessageStatus >= 3) {
+			$this->_message('lang:warning', $text, 'yellow');
 		}
+	}
+
+	/**
+	* Clear
+	*
+	* Clear screen
+	*
+	* @return null
+	*/
+	private function clear() 
+	{
+	    $clearscreen = chr(27)."[H".chr(27)."[2J";
+	    print $clearscreen;
+	}
+
+	/**
+	* Help
+	*
+	* Show help content
+	*
+	* @return null
+	*/
+	private function help()
+	{
+		echo "\n";
+		echo "	exit\n";
+		echo "	history\n";
+		echo "\n";
+	}
+
+	/**
+	* Cursor
+	*
+	* @return null
+	*/
+	private function cursor()
+	{
+		if (isset(self::$lang['cursor'])) {
+			$cursor = trim(self::$lang['cursor']);
+		} else {
+			$cursor = '->';
+		}
+		echo self::$color->getColoredString($cursor.' ', "cyan", null);								
 	}
 
 	/**
@@ -224,8 +202,8 @@ class Kernel
 	*/
 	public function info($text)
 	{
-		if ($this->userMessageStatus >= 2) {
-			$this->message('lang:info', $text, 'blue');
+		if (self::$userMessageStatus >= 2) {
+			$this->_message('lang:info', $text, 'blue');
 		}
 	}
 
@@ -239,31 +217,52 @@ class Kernel
 	*/
 	public function success($text)
 	{
-		if ($this->userMessageStatus >= 1) {
-			$this->message('lang:success', $text, 'green');
+		if (self::$userMessageStatus >= 1) {
+			$this->_message('lang:success', $text, 'green');
 		}
 	}
 
 	/**
-	* Get Lang
+	* Initialization
 	*
-	* Getting language value
-	*
-	* @param  string $key
-	* @return string
+	* @return null
 	*/
-	private function getLang($key)
-	{	
-		// Clear key 
-		if (substr($key, 0, 5) == 'lang:') {
-			$key = substr($key, 5);
+	public function _init()
+	{
+		/**
+		* Load configuration settings
+		*/
+		require_once('config.php');
+		$this->helps = $helps;
+		$this->languageSelection = $language;
+		self::$userMessageStatus = $userMessageStatus;
+		self::$userErrorMessageStatus = $userErrorMessageStatus;
+		self::$colorStatus = $colorStatus;
+
+		/**
+		* Load Colors Class
+		*/
+		require_once(KERNEL.'/colors.php');		
+		self::$color = new Colors(self::$colorStatus);
+
+		/**
+		* Load language file
+		*/
+		if (!file_exists("language/$language.php")) {
+			die("Language file is not found.\n");
+		} else {
+			require_once("language/$language.php");
+			self::$lang = $lang;
 		}
-		// Check lang key
-		if (!isset($this->lang[$key])) {
-			echo "	CRITICAL: Lang key is not found (language/$this->languageSelection.php): $key \n";
-			return false;
-		}
-		return $this->lang[$key];
+
+		/**
+		* Setting error handler
+		*/
+		set_error_handler(array($this, '_errorHandler'));
+		/**
+		* Starting listener
+		*/
+		$this->_listener();
 	}
 
 	/**
@@ -273,10 +272,10 @@ class Kernel
 	*
 	* @return null
 	*/
-	private function listener()
+	private function _listener()
 	{
 		// Write welcome message to screen
-		$this->lang('welcome', "cyan");
+		$this->_lang('welcome', "cyan");
 		echo "\n";
 		// Listener all the time
 		do {
@@ -299,7 +298,7 @@ class Kernel
 			} else if ($command != 'exit' && $command != '') {
 
 				// Get Commant Object
-				$operator = (object) $this->getCommandClass($command);
+				$operator = (object) $this->_getCommandClass($command);
 
 				// Write process result
 				$this->{$operator->type}($operator->message);
@@ -313,13 +312,17 @@ class Kernel
 					}
 				} 
 
+				$this->warning('Before Memory Usage => '.memory_get_usage());
+				unset($operator);
+				$this->warning('After Memory Usage => '.memory_get_usage());
+
 
 			}
 
 		} while ($command != 'exit');
 		// Showing exit message to screen
 		$this->cursor();
-		$this->lang('exit', 'cyan');
+		$this->_lang('exit', 'cyan');
 		echo "\n";
 		exit(0);  
 	}
@@ -332,7 +335,7 @@ class Kernel
 	* @param  string  $command
 	* @return boolean
 	*/
-	private function getCommandClass($command) 
+	private function _getCommandClass($command) 
 	{	
 		// Checking comman structure
 		if (strpos($command, ':') === false) {
@@ -368,29 +371,15 @@ class Kernel
 			$libraryPath = KERNEL.'/libraries/';
 		}; 
 
-		// Check class is loaded before?
-		if (isset($this->loadedClasses[$activeClass])) {
-			return array(
-				'status' => true,
-				'class' => $this->loadedClasses[$activeClass],
-				'method' => $activeMethod,
-				'type' => 'info',
-				'params' => $params,
-				'message' => 'lang:classLoadFromMemory'
-				);
-		}
-
 		// Library is exist?
 		if (file_exists($libraryPath.$activeClass.'.php')) {
 			// Load library
 			require_once($libraryPath.$activeClass.'.php');
 			// Checking class
 			if (class_exists($activeClass)) {
-				// Create new one
-				$this->loadedClasses[$activeClass] = new $activeClass($this);
 				return array(
 					'status' => true,
-					'class' => $this->loadedClasses[$activeClass],
+					'class' => new $activeClass($this),
 					'method' => $activeMethod,
 					'params' => $params,
 					'type' => 'info',
@@ -417,46 +406,85 @@ class Kernel
 	}
 
 	/**
-	* Clear
+	* Message 
 	*
-	* Clear screen
+	* Show message
 	*
-	* @return null
+	* @param  string $level
+	* @param  string $text
+	* @param  string $color
+	* @param  null
 	*/
-	public function clear() 
+	public function _message($level, $text, $color = null)
 	{
-	    $clearscreen = chr(27)."[H".chr(27)."[2J";
-	    print $clearscreen;
-	}
-
-	/**
-	* Help
-	*
-	* Show help content
-	*
-	* @return null
-	*/
-	private function help()
-	{
-		echo "\n";
-		echo "	exit\n";
-		echo "	history\n";
-		echo "\n";
-	}
-
-	/**
-	* Cursor
-	*
-	* @return null
-	*/
-	private function cursor()
-	{
-		if (isset($this->lang['cursor'])) {
-			$cursor = trim($this->lang['cursor']);
-		} else {
-			$cursor = '->';
+		// Checking lang message
+		$level = $this->_getLang($level);
+		if (substr($text, 0, 5) == 'lang:') {
+			// Check lang key is defined			
+			if (isset(self::$lang[substr($text, 5)])) {
+				$text = self::$lang[substr($text, 5)]; 				
+			} else {
+				echo "	CRITICAL: Lang key is not found (language/$this->languageSelection.php): $text \n";
+				return false;
+			}
 		}
-		echo $this->color->getColoredString($cursor.' ', "cyan", null);								
+		// Write message
+		echo "	".self::$color->getColoredString($level.": ".$text, $color, null)."\n";
+		return true;
+	}
+
+	/**
+	* Error Handler
+	* 
+	* Error handler method. All errors sending main error method.
+	* This method is just an alias.
+	*
+	* @param  string $no
+	* @param  string $str
+	* @param  string $file
+	* @param  string $line
+	* @return null
+	*/
+	private function _errorHandler($no = 0, $str, $file = 0, $line = 0)
+	{
+		$this->error($str." ($no, $file, $line)");
+	}
+
+	/**
+	* Lang
+	*
+	* Write lang message to console
+	*
+	* @param  string $key
+	* @param  string $color
+	* @return boolean
+	*/
+	public function _lang($key, $color = null)
+	{	
+		echo self::$color->getColoredString($this->_getLang($key), $color, null)."\n";						
+		return true;
+	}
+
+	/**
+	* Get Lang
+	*
+	* Getting language value
+	*
+	* @param  string $key
+	* @return string
+	*/
+	private function _getLang($key)
+	{	
+		// Clear key 
+		if (substr($key, 0, 5) == 'lang:') {
+			$key = substr($key, 5);
+		}
+		// Check lang key
+		if (!isset(self::$lang[$key])) {
+			echo "	CRITICAL: Lang key is not found (language/$this->languageSelection.php): $key \n";
+			return false;
+		}
+		return self::$lang[$key];
 	}
 
 }

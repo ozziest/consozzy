@@ -24,5 +24,6 @@ require_once(KERNEL.'/kernel.php');
 
 // Initializing Kernel
 $kernel = new Kernel();	
+$kernel->_init();
 
 ?>
