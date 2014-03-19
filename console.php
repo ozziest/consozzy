@@ -7,18 +7,20 @@ if (php_sapi_name() != 'cli') {
 	exit('No direct script access allowed');
 }
 
+define('CONSOLE', TRUE);
+define('KERNEL', 'system');
+
 /**
 * Checking console core
 */
-if (!file_exists('kernel/config.php') || !file_exists('kernel/kernel.php')) {
+if (!file_exists(KERNEL.'/config.php') || !file_exists(KERNEL.'/kernel.php')) {
 	die("Kernel is not found. \n");
 }
 
 /**
 * Load kernel files
 */
-define('CONSOLE', TRUE);
-require_once('kernel/kernel.php');
+require_once(KERNEL.'/kernel.php');
 
 // Initializing Kernel
 $kernel = new Kernel();	

@@ -1,4 +1,4 @@
-consozzy
+Consozzy
 ========
 
 Consozzy Simple Console Application

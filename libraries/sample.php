@@ -32,7 +32,7 @@ class Sample
 	*
 	* @return null
 	*/
-	public function test()
+	public function test($params)
 	{
 		// Show success message
 		$this->kernel->success('Everything is ok');

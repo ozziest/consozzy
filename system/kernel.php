@@ -14,6 +14,8 @@ class Kernel
 
 	/**
 	* Debug Log Options
+	*
+	* @var boolean
 	*/
 	private $log = true;
 
@@ -21,11 +23,15 @@ class Kernel
 	* History
 	*
 	* Command History
+	*
+	* @var array
 	*/
 	private $history = array();
 
 	/**
 	* Command History liste
+	*
+	* @var array
 	*/
 	private $historyIgnores = array(
 		'history',
@@ -34,24 +40,41 @@ class Kernel
 		);
 
 	/**
-	* Configuration
+	* Core Library
 	*
-	* General configuration variable
+	* System libraries
+	*
+	* @var array
 	*/
-	private $config;
+	private $coreLibraries = array(
+		'set'
+		);
 
 	/**
 	* User Message Status
+	*
+	* @var integer
 	*/
-	private $userMessageStatus;
+	public $userMessageStatus;
+
+	/**
+	* User Error Message Status
+	*
+	* @var boolean
+	*/
+	public $userErrorMessageStatus;
 
 	/**
 	* Color Status Variable
+	*
+	* @var boolean
 	*/
 	private $colorStatus;
 
 	/**
 	* Loaded classes array
+	*
+	* @var array
 	*/
 	private $loadedClasses = array();
 
@@ -72,12 +95,13 @@ class Kernel
 		$this->helps = $helps;
 		$this->languageSelection = $language;
 		$this->userMessageStatus = $userMessageStatus;
+		$this->userErrorMessageStatus = $userErrorMessageStatus;
 		$this->colorStatus = $colorStatus;
 
 		/**
 		* Load Colors Class
 		*/
-		require_once('kernel/colors.php');		
+		require_once(KERNEL.'/colors.php');		
 		$this->color = new Colors($this->colorStatus);
 
 		/**
@@ -142,7 +166,7 @@ class Kernel
 	* @param  string $color
 	* @param  null
 	*/
-	public function message($level, $text, $color = null)
+	private function message($level, $text, $color = null)
 	{
 		// Checking lang message
 		$level = $this->getLang($level);
@@ -170,7 +194,7 @@ class Kernel
 	*/
 	public function error($text)
 	{
-		if ($this->userMessageStatus >= 1) {
+		if ($this->userErrorMessageStatus === true) {
 			$this->message('lang:error', $text, 'red');
 		}
 	}
@@ -185,7 +209,7 @@ class Kernel
 	*/
 	public function warning($text)
 	{
-		if ($this->userMessageStatus >= 2) {
+		if ($this->userMessageStatus >= 3) {
 			$this->message('lang:warning', $text, 'yellow');
 		}
 	}
@@ -200,7 +224,7 @@ class Kernel
 	*/
 	public function info($text)
 	{
-		if ($this->userMessageStatus >= 3) {
+		if ($this->userMessageStatus >= 2) {
 			$this->message('lang:info', $text, 'blue');
 		}
 	}
@@ -215,7 +239,7 @@ class Kernel
 	*/
 	public function success($text)
 	{
-		if ($this->userMessageStatus >= 4) {
+		if ($this->userMessageStatus >= 1) {
 			$this->message('lang:success', $text, 'green');
 		}
 	}
@@ -279,11 +303,10 @@ class Kernel
 
 				// Write process result
 				$this->{$operator->type}($operator->message);
-
 				// Call method 
 				if ($operator->status == true) {
 					if (method_exists($operator->class, $operator->method)) {
-						$operator->class->{$operator->method}();
+						$operator->class->{$operator->method}($operator->params);
 					} else {
 						// method not found
 						$this->error("lang:methodNotFound");
@@ -299,6 +322,98 @@ class Kernel
 		$this->lang('exit', 'cyan');
 		echo "\n";
 		exit(0);  
+	}
+
+	/**
+	* Get Command Class
+	*
+	* Find command libraries
+	*
+	* @param  string  $command
+	* @return boolean
+	*/
+	private function getCommandClass($command) 
+	{	
+		// Checking comman structure
+		if (strpos($command, ':') === false) {
+			return array(	
+				'status' => false,
+				'class' => false,
+				'method' => false,
+				'params' => false,
+				'type' => 'error',
+				'message' => 'lang:falseCommandStructure'
+				);
+		} 
+
+		// Solving command
+		$this->command = explode(":", $command);
+		$activeClass = $this->command[0];
+		$activeMethod = $this->command[1];
+
+		// Solving parameter
+		$params = false;
+		if (strpos($activeMethod, ' ') !== false) {
+			$params = explode(' ', $activeMethod);
+			$activeMethod = $params[0];
+			unset($params[0]);
+			if (sizeof($params) == 1) {
+				$params = $params[1];
+			}
+		}
+
+		// Setting library path
+		$libraryPath = 'libraries/';
+		if (in_array($activeClass, $this->coreLibraries)) {
+			$libraryPath = KERNEL.'/libraries/';
+		}; 
+
+		// Check class is loaded before?
+		if (isset($this->loadedClasses[$activeClass])) {
+			return array(
+				'status' => true,
+				'class' => $this->loadedClasses[$activeClass],
+				'method' => $activeMethod,
+				'type' => 'info',
+				'params' => $params,
+				'message' => 'lang:classLoadFromMemory'
+				);
+		}
+
+		// Library is exist?
+		if (file_exists($libraryPath.$activeClass.'.php')) {
+			// Load library
+			require_once($libraryPath.$activeClass.'.php');
+			// Checking class
+			if (class_exists($activeClass)) {
+				// Create new one
+				$this->loadedClasses[$activeClass] = new $activeClass($this);
+				return array(
+					'status' => true,
+					'class' => $this->loadedClasses[$activeClass],
+					'method' => $activeMethod,
+					'params' => $params,
+					'type' => 'info',
+					'message' => 'lang:classLoadFromDisk'
+					);
+			} else {
+				$returnMessage= 'lang:classNotFound';
+			}
+		} else {
+			// Library not found
+			$returnMessage= 'lang:libraryNotFound';
+		}
+
+		// Return false result
+		return array(	
+			'status' => false,
+			'class' => false,
+			'method' => false,
+			'type' => 'error',
+			'params' => $params,
+			'message' => $returnMessage
+			);
+
 	}
 
 	/**
@@ -327,75 +442,6 @@ class Kernel
 		echo "	exit\n";
 		echo "	history\n";
 		echo "\n";
-	}
-
-	/**
-	* Get Command Class
-	*
-	* Find command libraries
-	*
-	* @param  string  $command
-	* @return boolean
-	*/
-	private function getCommandClass($command) 
-	{	
-		// Solving command
-		if (strpos($command, ':') === false) {
-			return array(	
-				'status' => false,
-				'class' => false,
-				'method' => false,
-				'type' => 'error',
-				'message' => 'lang:falseCommandStructure'
-				);
-		} 
-		$this->command = explode(":", $command);
-		$activeClass = $this->command[0];
-		$activeMethod = $this->command[1];
-
-		// Check class is loaded before?
-		if (isset($this->loadedClasses[$activeClass])) {
-			return array(
-				'status' => true,
-				'class' => $this->loadedClasses[$activeClass],
-				'method' => $activeMethod,
-				'type' => 'info',
-				'message' => 'lang:classLoadFromMemory'
-				);
-		}
-
-		// Library is exist?
-		if (file_exists('libraries/'.$activeClass.'.php')) {
-			// Load library
-			require_once('libraries/'.$activeClass.'.php');
-			// Checking class
-			if (class_exists($activeClass)) {
-				// Create new one
-				$this->loadedClasses[$activeClass] = new $activeClass($this);
-				return array(
-					'status' => true,
-					'class' => $this->loadedClasses[$activeClass],
-					'method' => $activeMethod,
-					'type' => 'info',
-					'message' => 'lang:classLoadFromDisk'
-					);
-			} else {
-				$returnMessage= 'lang:classNotFound';
-			}
-		} else {
-			// Library not found
-			$returnMessage= 'lang:libraryNotFound';
-		}
-
-		// Return false result
-		return array(	
-			'status' => false,
-			'class' => false,
-			'method' => false,
-			'type' => 'error',
-			'message' => $returnMessage
-			);
-
 	}
 
 	/**
