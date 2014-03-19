@@ -9,8 +9,7 @@ $lang['warning'] = 'Uyarı';
 $lang['info'] = 'Bilgi';
 $lang['success'] = 'Başarı';
 
-$lang['classLoadFromMemory'] = 'Sınıf bellek üzerinden yüklendi.';
-$lang['classLoadFromDisk'] = 'Sınıf disk üzerinden yüklendi.';
+$lang['classLoad'] = 'Sınıf yüklendi.';
 
 $lang['falseCommandStructure'] = 'Komut yapısı geçerli değil.';
 $lang['classNotFound'] = 'Sınıf bulunamadı.';

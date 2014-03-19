@@ -20,7 +20,7 @@ class Sample extends Kernel
 	public function test($params)
 	{
 		// Show success message
-		$this->success('Everything is ok');
+		$this->success('Sample kütüphanesi, test metotu başarılı bir şekilde çalıştırıldı.');
 	}
 
 }

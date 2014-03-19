@@ -73,6 +73,10 @@ Dil değerleri *language* klasörü altında bulunmaktadır. `lang:key` değeri 
 istediğiniz değeri belirttiğinizde `key` ile belirtilen dil anahtarı seçilen dil
 değerinde tanımlı olmak zorundadır. 
 
+***
+### Ekran Görüntüsü
+
+![alt text](http://www.ozguradem.net/wp-content/uploads/2014/03/console.jpg "Ekran Görüntüsü")
 
 
 

@@ -379,7 +379,7 @@ class Kernel
 					'method' => $activeMethod,
 					'params' => $params,
 					'type' => 'info',
-					'message' => 'lang:classLoadFromDisk'
+					'message' => 'lang:classLoad'
 					);
 			} else {
 				$returnMessage= 'lang:classNotFound';
