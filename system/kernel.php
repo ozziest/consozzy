@@ -311,12 +311,8 @@ class Kernel
 						$this->error("lang:methodNotFound");
 					}
 				} 
-
-				$this->warning('Before Memory Usage => '.memory_get_usage());
+				// Remove class from memory
 				unset($operator);
-				$this->warning('After Memory Usage => '.memory_get_usage());
-
-
 			}
 
 		} while ($command != 'exit');
