@@ -35,18 +35,35 @@ Bunun için *libraries* klasörü altında dosya adı aynı olmak şartıyla aş
 şekilde bir class oluşturabilirsiniz. *(libraries/command.php)*
 
 ```php
-class Command extends Kernel
+namespace Ozziest\Consozzy\Libraries;
+use Ozziest\Consozzy\System as System;
+
+class Sample extends System\Kernel
 {
 
-	public function test($param)
-	{
-		// Simple messages
-		$this->success('Simple success message.');
-		$this->warning('Simple error message');
-		$this->info('Simple information message');
-		// Language message
-		$this->error('lang:langCode');
+	public function index()
+	{	
+		// Sample user message
+		$this->success('sample:test command was successfully executed.');
+		$this->warning('sample:test command was successfully executed.');
+		$this->info('sample:test command was successfully executed.');
+		$this->error('sample:test command was successfully executed.');
+		// Listening sub command
+		$command = $this->ready();
+		// Write sample sub command
+		$this->warning("New command: $command ");
 
+		if (method_exists($this, $command)) {
+			$this->{$command}();
+		} else {
+			$this->error('Sub command not found');
+		}
+
+	}
+
+	private function sub()
+	{
+		$this->warning('This is simple sub process');
 	}
 
 }
@@ -62,6 +79,18 @@ aşağıdaki kod aracılığı ile çağırabilirsiniz.
 Oluşturduğunuz methoda dilediğiniz kadar parametre gönderebilirsiniz. Eğer sadece 1
 adet parametre gönderirseniz o parametre string olarak, bir den fazla parametre 
 gönderirseniz gönderdiğiniz parametre dizi olarak methoda ulaşacaktır. 
+
+Genişletme aşamasında kullanabileceğiniz Kernel methodları;
+
+* `success`: Ekrana yeşil renkte başarılı mesajı yazar. (-ln)
+* `info`: Ekrana mavi renkte bilgi mesajı yazar. (-ln)
+* `warning`: Ekrana sarı uyarı renkte mesajı yazar. (-ln)
+* `error`: Ekrana kırmızı renkte hata mesajı yazar. (-ln)
+* `write`: Ekrana mesaj yazar ve alt satıra geçmez.
+* `writeln`: Ekrana mesaj yazar ve alt satıra geçer.
+* `ready`: Kendi geliştirdiğiniz kütüphanelerde alt komutlar almak isteyebilirsiniz. 
+Yukarıdaki örnekte nasıl kullanacağınız gösterilmiştir.
+
 
 ***
 ### Ayarlar ve Dil Değerleri
