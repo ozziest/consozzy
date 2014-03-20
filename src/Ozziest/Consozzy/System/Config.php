@@ -68,6 +68,22 @@ class Config
 	}
 
 	/**
+	* Set Config Item
+	*
+	* @param  string $key
+	* @param  string $value
+	* @return boolean
+	*/
+	public static function set($key, $value)
+	{
+		if (!isset(self::$configs->{$key})) {
+			return false;
+		}	
+		self::$configs->{$key} = $value;
+		Kernel::warning('Konsol ayarı güncellendi.');		
+	}
+
+	/**
 	* Get
 	*
 	* Get all data or one config element

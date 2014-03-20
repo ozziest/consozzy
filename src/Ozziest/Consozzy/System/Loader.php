@@ -31,6 +31,25 @@ class Loader
 	private static $loaded = false;
 
 	/**
+	* Config Class Object
+	*
+	* @var object
+	*/
+	public static $config;
+
+	/**
+	* Language Class Object
+	*
+	* @var object
+	*/
+	public static $language;
+
+	/**
+	* Kernel Class Object
+	*/
+	public static $kernel;
+
+	/**
 	* Construct
 	*/
 	public function __construct()
@@ -49,13 +68,13 @@ class Loader
 		set_error_handler(array($this, 'errorHandler'));
 
 		// Loading all elements
-		new Config();
-		new Language();
+		self::$config = new Config();
+		self::$language = new Language();
 		if (Config::get('colorStatus')) {
 			new Colors();
 		}
-		$kernel = new Kernel();
-		$kernel->_init();
+		self::$kernel = new Kernel();
+		self::$kernel->_init();
 
 		//new Kernel();
 

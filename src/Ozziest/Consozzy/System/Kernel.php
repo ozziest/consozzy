@@ -15,7 +15,7 @@ use Ozziest\Consozzy\System\Core;
  * @author      Ozgur Adem Isikli
  * @link        https://github.com/ozguradem/consozzy
  */
-class Kernel
+class Kernel extends Loader
 {
 
 	/**
@@ -37,6 +37,17 @@ class Kernel
 		);
 
 	/**
+	* Core commands
+	*
+	* @var array
+	*/
+	private $coreCommands = array(
+		'clear',
+		'history',
+		'help'
+		);
+
+	/**
 	* Core Libraries
 	*
 	* @var array
@@ -46,6 +57,14 @@ class Kernel
 		);
 
 	/**
+	* Kernel construct
+	*/
+	public function __construct()
+	{
+
+	}
+
+	/**
 	* Write Success Message
 	*
 	* @param string $message
@@ -53,7 +72,9 @@ class Kernel
 	*/
 	public static function success($message)
 	{	
-		self::writeln('	'.self::_solveMessage($message), 'green');
+		if (Config::get('userMessageStatus') >= 1) {
+			self::writeln('	'.self::_solveMessage($message), 'green');			
+		}
 	}
 
 	/**
@@ -64,7 +85,9 @@ class Kernel
 	*/
 	public static function info($message)
 	{	
-		self::writeln('	'.self::_solveMessage($message), 'blue');
+		if (Config::get('userMessageStatus') >= 2) {
+			self::writeln('	'.self::_solveMessage($message), 'blue');
+		}
 	}
 
 	/**
@@ -75,7 +98,9 @@ class Kernel
 	*/
 	public static function warning($message)
 	{	
-		self::writeln('	'.self::_solveMessage($message), 'brown');
+		if (Config::get('userMessageStatus') >= 3) {
+			self::writeln('	'.self::_solveMessage($message), 'brown');
+		}
 	}
 
 	/**
@@ -98,7 +123,7 @@ class Kernel
 	* @param  string $color
 	* @return null
 	*/
-	private static function write($message = '', $color = null)
+	public static function write($message = '', $color = null)
 	{
 		$message = Colors::get($message, $color);
 		print($message);
@@ -111,7 +136,7 @@ class Kernel
 	* @param  string $color
 	* @return null
 	*/
-	private static function writeln($message = '', $color = null)
+	public static function writeln($message = '', $color = null)
 	{
 		$message = Colors::get($message, $color);
 		print($message."\n");
@@ -138,6 +163,49 @@ class Kernel
 			array_push($this->commandHistory, $command);	
 		}
 		return $command;
+	}
+
+	/**
+	* Clear
+	*
+	* Clear screen
+	*
+	* @return null
+	*/
+	private function clear() 
+	{
+	    $clearscreen = chr(27)."[H".chr(27)."[2J";
+	    print $clearscreen;
+	}
+
+	/**
+	* History
+	*
+	* Liste command history
+	* 
+	* @return false;
+	*/
+	private function history()
+	{
+		$this->writeln('	Son 10 komut listeleniyor.', 'cyan');
+		for ($i = sizeof($this->commandHistory); $i >= 0; $i--) { 
+			$this->writeln('	- '.$this->commandHistory[$i], 'blue');
+		}
+	}
+
+	/**
+	* Help
+	*
+	* Show help content
+	*
+	* @return null
+	*/
+	private function help()
+	{
+		echo "\n";
+		echo "	exit\n";
+		echo "	history\n";
+		echo "\n";
 	}
 
 	/**
@@ -171,7 +239,7 @@ class Kernel
 			/**
 			* Checking command is local command
 			*/
-			if (method_exists($this, $command)) {
+			if (in_array($command, $this->coreCommands) && method_exists($this, $command)) {
 				$this->{$command}();
 			} else if ($command != 'exit' && $command != '') {
 
@@ -238,9 +306,11 @@ class Kernel
 		if (file_exists($libraryPath.$activeClass.'.php')) {
 			// Load Library
 			if ($libraryPath == __DIR__.'/Core/') {
+				// Core class load
 				$classTemp = 'Ozziest\\Consozzy\\System\\Core\\'.$activeClass;
 				$init = new $classTemp;
 			} else {
+				// Development class load
 				$classTemp = 'Ozziest\\Consozzy\\Libraries\\'.$activeClass;
 				$init = new $classTemp;
 			}

@@ -41,7 +41,7 @@ use Ozziest\Consozzy\System as System;
 class Sample extends System\Kernel
 {
 
-	public function index()
+	public function index($params)
 	{	
 		// Sample user message
 		$this->success('sample:test command was successfully executed.');
@@ -73,7 +73,7 @@ Yukarıdaki örnekteki gibi bir sınıf tanımladığınızda, bu sınıfı kons
 aşağıdaki kod aracılığı ile çağırabilirsiniz.
 
 ```bash
--> command:test myParam1 myParam2 myParam3
+-> sample:index myParam1 myParam2 myParam3
 ```
 
 Oluşturduğunuz methoda dilediğiniz kadar parametre gönderebilirsiniz. Eğer sadece 1

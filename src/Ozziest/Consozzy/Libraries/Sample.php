@@ -13,9 +13,10 @@ class Sample extends System\Kernel
 	*
 	* Sample command process
 	*
+	* @param  array $params
 	* @return null
 	*/
-	public function index()
+	public function index($params)
 	{	
 		// Sample user message
 		$this->success('sample:test command was successfully executed.');
