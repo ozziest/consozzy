@@ -48,4 +48,17 @@ class Sample extends System\Kernel
 		$this->warning('This is simple sub process');
 	}
 
+	/**
+	* Error 
+	*
+	* Error handling test
+	*
+	* @return null
+	*/
+	public function test()
+	{
+		$this->warning('Sample error handler test.');
+		$temp = 7/0;
+	}
+
 }

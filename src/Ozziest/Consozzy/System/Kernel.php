@@ -354,7 +354,7 @@ class Kernel extends Loader
 	{
 		// Clear key 
 		if (substr($message, 0, 5) == 'lang:') {
-			$key = substr($key, 5);
+			$key = substr($message, 5);
 		} else {
 			return $message;
 		}

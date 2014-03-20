@@ -74,6 +74,7 @@ class Loader
 			new Colors();
 		}
 		self::$kernel = new Kernel();
+		self::$loaded = true;
 		self::$kernel->_init();
 
 		//new Kernel();
@@ -107,7 +108,7 @@ class Loader
 		if (self::$loaded == false) {
 			self::setError($str);
 		} else {
-			var_dump('henüz kernel hazır değil');
+			self::$kernel->error("$no: $str $file, $line ");
 		}
 	}
 
