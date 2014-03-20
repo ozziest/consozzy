@@ -51,8 +51,13 @@ class Loader
 		// Loading all elements
 		new Config();
 		new Language();
+		if (Config::get('colorStatus')) {
+			new Colors();
+		}
+		$kernel = new Kernel();
+		$kernel->_init();
 
-		echo Language::get('cursor');
+		//new Kernel();
 
 		/*
 		* Checking error message status. If we have got 
@@ -62,7 +67,7 @@ class Loader
 			exit(self::$errorMessage);
 		}
 
-		var_dump('ok');
+		echo "Console is closed! \n";
 
 	}
 

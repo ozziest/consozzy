@@ -39,6 +39,16 @@ class Config
 				'colorStatus' => true,
 
 				/**
+				* Prompt Color
+				*/
+				'promptColor' => 'green',
+
+				/**
+				* Prompt Sub Color
+				*/
+				'promptSubColor' => 'yellow',
+
+				/**
 				* User Message Status
 				*
 				*	0 - Disables All Messages
