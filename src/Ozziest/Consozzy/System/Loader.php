@@ -116,13 +116,14 @@ class Loader
 	* Set Error
 	*
 	* @param  string $message
-	* @return null
+	* @return boolean
 	*/
-	public function setError($message)
+	public static function setError($message)
 	{
 		if (self::$errorMessage === false) {
 			self::$errorMessage = $message." \n";			
 		}
+		return false;
 	}
 
 }

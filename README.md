@@ -120,8 +120,26 @@ yapabilirsiniz. Renk değerleri *System/Colors.php* dosyası içinde bulunmaktad
 ### Ayarlar ve Dil Değerleri
 
 Konsol ile ilgili tüm ayarlar `System/Config.php` dosyasının içerisinde tanımlanmıştır.
-Bu bölümdeki ayarları değiştirerek konsol çalışmasını konfigüre edebilirsiniz. Dil 
-değerleri *Language* klasörü altında bulunmaktadır. 
+Bu bölümdeki ayarları değiştirerek konsol çalışmasını konfigüre edebilirsiniz. 
+
+Dil değerleri *Language* klasörü altında bulunmaktadır. `console.php` dil dosyası içerisinde
+konsol çekirdeğinde kullanılan mesajları görebilirsiniz. Bu dosya varsayılan olarak konsol
+açılışında yüklenmektedir. Dilerseniz bu dosyaya dil değeri ekleyebilirsiniz. Ayrıca konsol
+çalışması anında siz de dil dosyası yüklenmesini isteyebilirsiniz. `Libraries/Sample.php` 
+dosyası içerisinde aşağıda görüldüğü şekilde çalışma anında dil dosyası yüklenmesi işlemi
+tanımlanmıştır.
+
+```php
+	// Warning message
+	$this->warning('Language file loading...');
+	// Language file loading...
+	if (System\Language::load('sample')) {
+		// Load operation is successfull!
+		$this->success('Language file was loaded!');
+		// Language value written.
+		$this->info('lang:sample_key');
+	}
+```
 
 ***
 ### Ekran Görüntüsü

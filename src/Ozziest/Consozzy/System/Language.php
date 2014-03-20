@@ -99,6 +99,26 @@ class Language
 	}
 
 	/**
+	* Load
+	*
+	* Language file loading.
+	* 
+	* @param  string $fileName
+	* @return boolean
+	*/
+	public static function load($fileName)
+	{
+		$directory = __DIR__.'/../Language/'.self::$langCode.'/';
+		if (!file_exists($directory.$fileName.'.php')) {
+			return Loader::errorHandler(null, "Language file is missing: `$fileName.php` ");
+		}
+		$lang = '';
+		require_once($directory.$fileName.'.php');
+		self::loadKeys($lang);
+		return true;
+	}
+
+	/**
 	* Get
 	*
 	* @param  string $key
@@ -119,7 +139,7 @@ class Language
 	* @param  array $keys
 	* @return null
 	*/
-	public function loadKeys($keys)
+	public static function loadKeys($keys)
 	{
 		foreach ($keys as $key => $value) {
 			self::$lang[$key] = $value;

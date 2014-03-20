@@ -49,6 +49,34 @@ class Sample extends System\Kernel
 	}
 
 	/**
+	* Load Lang
+	*
+	* Language file loading sample.
+	*
+	* @return null
+	*/
+	public function loadlang()
+	{
+		$this->warning('Language file loading...');
+		if (System\Language::load('sample')) {
+			$this->success('Language file was loaded!');
+			$this->info('lang:sample_key');
+		}
+	}
+
+	/**
+	* Test Lang
+	*
+	* Sample language key testing.
+	* 
+	* @return false;
+	*/
+	public function testlang()
+	{
+		$this->info('lang:sample_key');
+	}
+
+	/**
 	* Error 
 	*
 	* Error handling test
