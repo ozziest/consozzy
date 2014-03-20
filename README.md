@@ -1,10 +1,10 @@
 Consozzy
 ========
 
-Consozzy, PHP tabanlı konsol uygulaması geliştirme aracıdır. Basit yönlendirme, dil desteği,
+Consozzy, PHP tabanlı konsol uygulaması geliştirme kütüpahanesidir. Basit yönlendirme, çoklu dil desteği,
 renkli kullanıcı mesajları gibi temel özellikleri içerisinde barındırır. Bunun haricinde 
-sizin tarafınızdan geliştirilecek bölümler rahatlıklar ayrı bir kütüphane olarak uygulamaya
-dahil edilebilir.
+sizin tarafınızdan geliştirilecek bölümler rahatlıkla uygulamaya dahil edilebilir. Bu kütüphane ile 
+çok hızlı bir şekilde konsol uygulaması geliştirebilirsiniz.
 
 ***
 ### Kullanım
@@ -17,22 +17,23 @@ $ php console.php
 
 
 * `help`: Komut açıklamalarını gösterir.
-* `exit`: Konsoldan çıkar.
 * `clear`: Ekranı temizler.
-* `set:color [param]`: Kullanıcı mesajlarının renklerini ayarlar. (true, false)
-* `set:message [param]`: Gösterilecek kullanıcı mesajı seviyesini belirler. 
-				 0. Hiç bir mesaj gösterilmez.
-				 1. Sadece başarı mesajları
-				 2. Başarı ve bilgi mesajları
-				 3. Başarı, bilgi ve uyarı mesajları.
-* `set:error [param]`: Hataların gösterimini ayarlar. (true, false)
+* `history`: Son komutlar listelenir.
+* `exit`: Konsoldan çıkar.
+* `set:colors [argument]`: Kullanıcı mesajlarının renklerini ayarlar. (true, false)
+* `set:messages [argument]`: Gösterilecek kullanıcı mesajı seviyesini belirler. 
+	* 0 -> Hiç bir mesaj gösterilmez.
+	* 1 -> Sadece başarı mesajları
+	* 2 -> Başarı ve bilgi mesajları
+	* 3 -> Başarı, bilgi ve uyarı mesajları.
+* `set:errors [argument]`: Hataların gösterimini ayarlar. (true, false)
 
 ***
 ### Genişletme
 
 Kendi yazacağınız kütüphaneler ile temel konsol uygulamasını genişletebilirsiniz.
-Bunun için *libraries* klasörü altında dosya adı aynı olmak şartıyla aşağıdaki 
-şekilde bir class oluşturabilirsiniz. *(libraries/command.php)*
+Bunun için *Libraries* klasörü altında dosya adı aynı olmak şartıyla aşağıdaki 
+şekilde bir class oluşturabilirsiniz. *(Libraries/Sample.php)*
 
 ```php
 namespace Ozziest\Consozzy\Libraries;
@@ -80,32 +81,52 @@ Oluşturduğunuz methoda dilediğiniz kadar parametre gönderebilirsiniz. Eğer 
 adet parametre gönderirseniz o parametre string olarak, bir den fazla parametre 
 gönderirseniz gönderdiğiniz parametre dizi olarak methoda ulaşacaktır. 
 
-Genişletme aşamasında kullanabileceğiniz Kernel methodları;
+Genişletme aşamasında kullanabileceğiniz çekirdek methodlar;
 
-* `success`: Ekrana yeşil renkte başarılı mesajı yazar. (-ln)
-* `info`: Ekrana mavi renkte bilgi mesajı yazar. (-ln)
-* `warning`: Ekrana sarı uyarı renkte mesajı yazar. (-ln)
-* `error`: Ekrana kırmızı renkte hata mesajı yazar. (-ln)
-* `write`: Ekrana mesaj yazar ve alt satıra geçmez.
-* `writeln`: Ekrana mesaj yazar ve alt satıra geçer.
-* `ready`: Kendi geliştirdiğiniz kütüphanelerde alt komutlar almak isteyebilirsiniz. 
-Yukarıdaki örnekte nasıl kullanacağınız gösterilmiştir.
+* `success([message])`: Ekrana yeşil renkte başarılı mesajı yazar. (-ln)
+* `info([message])`: Ekrana mavi renkte bilgi mesajı yazar. (-ln)
+* `warning([message])`: Ekrana sarı uyarı renkte mesajı yazar. (-ln)
+* `error([message])`: Ekrana kırmızı renkte hata mesajı yazar. (-ln)
+* `write([message, color])`: Ekrana mesaj yazar ve alt satıra geçmez.
+* `writeln([message, color])`: Ekrana mesaj yazar ve alt satıra geçer.
+* `ready()`: Kendi geliştirdiğiniz kütüphanelerde alt komutlar almak isteyebilirsiniz. 
+Yukarıdaki örnekte kullanım şekli gösterilmiştir.
 
+***
+### Renkler
+
+Aşağıdaki renkler varsayılan olarak konsol uygulaması içerisinde kullanılabilir. 
+Dilerseniz bu renklerin değerlerini değiştirebilir ya da yeni renk tanımlaması 
+yapabilirsiniz. Renk değerleri *System/Colors.php* dosyası içinde bulunmaktadır.
+
+* `black`
+* `dark_gray`
+* `blue`
+* `light_blue`
+* `green`
+* `light_green`
+* `cyan`
+* `light_cyan`
+* `red`
+* `light_red`
+* `purple`
+* `light_purple`
+* `brown`
+* `yellow`
+* `light_gray`
+* `white`
 
 ***
 ### Ayarlar ve Dil Değerleri
 
-Konsol ile ilgili tüm ayarlar `system/config.php` dosyasının içerisinde tanımlanmıştır.
-Bu bölümdeki ayarları değiştirerek konsol çalışmasını konfigüre edebilirsiniz.
-
-Dil değerleri *language* klasörü altında bulunmaktadır. `lang:key` değeri ile yazdırmak 
-istediğiniz değeri belirttiğinizde `key` ile belirtilen dil anahtarı seçilen dil
-değerinde tanımlı olmak zorundadır. 
+Konsol ile ilgili tüm ayarlar `System/Config.php` dosyasının içerisinde tanımlanmıştır.
+Bu bölümdeki ayarları değiştirerek konsol çalışmasını konfigüre edebilirsiniz. Dil 
+değerleri *Language* klasörü altında bulunmaktadır. 
 
 ***
 ### Ekran Görüntüsü
 
-![alt text](http://www.ozguradem.net/wp-content/uploads/2014/03/console.jpg "Ekran Görüntüsü")
+![alt text](http://www.ozguradem.net/wp-content/uploads/2014/03/console1.jpg "Ekran Görüntüsü")
 
 
 

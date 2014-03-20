@@ -1,0 +1,9 @@
+{
+ 	"require": {
+        "symfony/finder": "2.1.*",
+        "symfony/class-loader": "2.5.*@dev"
+    },
+    "autoload": {
+        "psr-4": {"Acme\\": "src/"}
+    }
+}

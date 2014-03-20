@@ -188,8 +188,10 @@ class Kernel extends Loader
 	private function history()
 	{
 		$this->writeln('	Son 10 komut listeleniyor.', 'cyan');
+		$count = 1;
 		for ($i = sizeof($this->commandHistory); $i >= 0; $i--) { 
 			$this->writeln('	- '.$this->commandHistory[$i], 'blue');
+			if (++$count > 10) break;
 		}
 	}
 
