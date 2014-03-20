@@ -59,6 +59,15 @@ class Config
 				'userMessageStatus' => 3,
 
 				/**
+				* User Message Prefix 
+				*
+				* 	Example;
+				* 		Error: Message content.
+				*		Success: Message content.
+				*/
+				'userMessagePrefix' => true,
+
+				/**
 				* User Error Message Status
 				*/
 				'userErrorMessageStatus' => true

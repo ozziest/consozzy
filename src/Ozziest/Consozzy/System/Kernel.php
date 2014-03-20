@@ -73,7 +73,10 @@ class Kernel extends Loader
 	public static function success($message)
 	{	
 		if (Config::get('userMessageStatus') >= 1) {
-			self::writeln('	'.self::_solveMessage($message), 'green');			
+			self::writeln(
+				self::_getPrefix('success').self::_solveMessage($message), 
+				'green'
+				);			
 		}
 	}
 
@@ -86,7 +89,10 @@ class Kernel extends Loader
 	public static function info($message)
 	{	
 		if (Config::get('userMessageStatus') >= 2) {
-			self::writeln('	'.self::_solveMessage($message), 'blue');
+			self::writeln(
+				self::_getPrefix('info').self::_solveMessage($message), 
+				'blue'
+				);			
 		}
 	}
 
@@ -99,7 +105,10 @@ class Kernel extends Loader
 	public static function warning($message)
 	{	
 		if (Config::get('userMessageStatus') >= 3) {
-			self::writeln('	'.self::_solveMessage($message), 'brown');
+			self::writeln(
+				self::_getPrefix('warning').self::_solveMessage($message), 
+				'brown'
+				);			
 		}
 	}
 
@@ -112,7 +121,10 @@ class Kernel extends Loader
 	public static function error($message)
 	{	
 		if (Config::get('userErrorMessageStatus')) {
-			self::writeln('	'.self::_solveMessage($message), 'red');
+			self::writeln(
+				self::_getPrefix('error').self::_solveMessage($message), 
+				'red'
+				);			
 		}
 	}
 
@@ -187,9 +199,9 @@ class Kernel extends Loader
 	*/
 	private function history()
 	{
-		$this->writeln('	Son 10 komut listeleniyor.', 'cyan');
+		$this->writeln('	'.$this->_solveMessage('lang:titleHistory'), 'cyan');
 		$count = 1;
-		for ($i = sizeof($this->commandHistory); $i >= 0; $i--) { 
+		for ($i = sizeof($this->commandHistory) - 1; $i >= 0; $i--) { 
 			$this->writeln('	- '.$this->commandHistory[$i], 'blue');
 			if (++$count > 10) break;
 		}
@@ -252,13 +264,23 @@ class Kernel extends Loader
 				$this->{$operator->type}($operator->message);
 				// Call method 
 				if ($operator->status == true) {
-					if (method_exists($operator->class, $operator->method)) {
-						$operator->class->{$operator->method}($operator->params);
+
+					// Check kernel method
+					if (method_exists($this, $operator->method)) {
+						// Kernel method error
+						$this->error('lang:cannotCallKernelMethod');
 					} else {
-						// method not found
-						$this->error($this->_solveMessage('lang:methodNotFound'). " `$operator->method ");
+						// Checking method
+						if (method_exists($operator->class, $operator->method)) {
+							// Calling method
+							$operator->class->{$operator->method}($operator->params);
+						} else {
+							// method not found
+							$this->error($this->_solveMessage('lang:methodNotFound'). " `$operator->method` ");
+						}
 					}
-				} 
+				} 					
+
 				// Remove class from memory
 				unset($operator);
 			}
@@ -359,6 +381,20 @@ class Kernel extends Loader
 			return $message;
 		}
 		return Language::get(substr($message, 5));
+	}
+
+	/**
+	* Get Prefix
+	*
+	* @param  string $type
+	* @return string
+	*/
+	private static function _getPrefix($type)
+	{
+		if (Config::get('userMessagePrefix')) {
+			return '	'.Language::get($type).': ';
+		} 
+		return '	';
 	}
 
 	/**
