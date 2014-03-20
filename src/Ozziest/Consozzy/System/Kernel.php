@@ -3,7 +3,8 @@
 namespace Ozziest\Consozzy\System;
 
 
-use Ozziest\Consozzy\Libraries as Libraries;
+use Ozziest\Consozzy\Libraries;
+use Ozziest\Consozzy\System\Core;
 
 /**
  * Kernel
@@ -36,14 +37,58 @@ class Kernel
 		);
 
 	/**
-	* Init
+	* Core Libraries
 	*
+	* @var array
+	*/
+	private $coreLibraries = array(
+		'set'
+		);
+
+	/**
+	* Write Success Message
+	*
+	* @param string $message
 	* @return null
 	*/
-	public function _init()
-	{
-		$this->_open();
-		$this->_listener();
+	public static function success($message)
+	{	
+		self::writeln('	'.self::_solveMessage($message), 'green');
+	}
+
+	/**
+	* Write Information Message
+	*
+	* @param string $message
+	* @return null
+	*/
+	public static function info($message)
+	{	
+		self::writeln('	'.self::_solveMessage($message), 'blue');
+	}
+
+	/**
+	* Write Warning Message
+	*
+	* @param string $message
+	* @return null
+	*/
+	public static function warning($message)
+	{	
+		self::writeln('	'.self::_solveMessage($message), 'brown');
+	}
+
+	/**
+	* Write Error Message
+	*
+	* @param string $message
+	* @return null
+	*/
+	public static function error($message)
+	{	
+		if (Config::get('userErrorMessageStatus')) {
+			self::writeln('	'.self::_solveMessage($message), 'red');
+		}
 	}
 
 	/**
@@ -70,6 +115,178 @@ class Kernel
 	{
 		$message = Colors::get($message, $color);
 		print($message."\n");
+	}
+
+	/**
+	* Ready
+	*
+	* This method listen new sub command.
+	* All libraries can use this method for listen to 
+	* specefic commands.
+	*
+	* @return string;
+	*/
+	public function ready()
+	{
+		// Cursor 
+		$this->_promptSub();
+		// Listening for new command from user
+		$handle = fopen ("php://stdin","r");
+		$command = trim(fgets($handle));
+		// Update command history
+		if (!in_array($command, $this->commandHistoryIgnores)) {
+			array_push($this->commandHistory, $command);	
+		}
+		return $command;
+	}
+
+	/**
+	* Init
+	*
+	* @return null
+	*/
+	public function _init()
+	{
+		$this->_open();
+		$this->_listener();
+		$this->_close();
+		exit(0);  
+	}
+
+	/**
+	* Listener
+	*
+	* Command listener
+	*
+	* @return null
+	*/
+	private function _listener()
+	{
+		// Listener all the time
+		do {
+			// Waiting new command.
+			$command = '';
+			$command = $this->_command();
+
+			/**
+			* Checking command is local command
+			*/
+			if (method_exists($this, $command)) {
+				$this->{$command}();
+			} else if ($command != 'exit' && $command != '') {
+
+				// Get Commant Object
+				$operator = (object) $this->_getCommandClass($command);
+
+				// Write process result
+				$this->{$operator->type}($operator->message);
+				// Call method 
+				if ($operator->status == true) {
+					if (method_exists($operator->class, $operator->method)) {
+						$operator->class->{$operator->method}($operator->params);
+					} else {
+						// method not found
+						$this->error($this->_solveMessage('lang:methodNotFound'). " `$operator->method ");
+					}
+				} 
+				// Remove class from memory
+				unset($operator);
+			}
+		} while ($command != 'exit');
+	}
+
+	/**
+	* Get Command Class
+	*
+	* Find command libraries
+	*
+	* @param  string  $command
+	* @return boolean
+	*/
+	private function _getCommandClass($command) 
+	{	
+		// Checking comman structure
+		if (strpos($command, ':') === false) {
+			$command .= ':index';
+		} 
+
+		// Solving command
+		$this->command = explode(":", $command);
+		$activeClass = $this->command[0];
+		$activeMethod = $this->command[1];
+
+		// Solving parameter
+		$params = false;
+		if (strpos($activeMethod, ' ') !== false) {
+			$params = explode(' ', $activeMethod);
+			$activeMethod = $params[0];
+			unset($params[0]);
+			if (sizeof($params) == 1) {
+				$params = $params[1];
+			}
+		}
+
+		if (in_array($activeClass, $this->coreLibraries)) {
+			// Setting library path
+			$libraryPath = __DIR__.'/Core/';	
+		} else {
+			// Setting library path
+			$libraryPath = __DIR__.'/../Libraries/';
+		}
+
+		// Library is exist?
+		if (file_exists($libraryPath.$activeClass.'.php')) {
+			// Load Library
+			if ($libraryPath == __DIR__.'/Core/') {
+				$classTemp = 'Ozziest\\Consozzy\\System\\Core\\'.$activeClass;
+				$init = new $classTemp;
+			} else {
+				$classTemp = 'Ozziest\\Consozzy\\Libraries\\'.$activeClass;
+				$init = new $classTemp;
+			}
+			return array(
+				'status' => true,
+				'class' => $init,
+				'method' => $activeMethod,
+				'params' => $params,
+				'type' => 'info',
+				'message' => 'lang:classLoad'
+				);
+		} else {
+			// Library not found
+			$returnMessage= 'lang:libraryNotFound';
+		}
+
+		// Return false result
+		return array(	
+			'status' => false,
+			'class' => false,
+			'method' => false,
+			'type' => 'error',
+			'params' => $params,
+			'message' => $returnMessage
+			);
+
+	}
+
+	/**
+	* Solve Message
+	*
+	* If message have got `lang:` key in content
+	* then get language value from language file.
+	*
+	* @param  string $message
+	* @return null
+	*/
+	private static function _solveMessage($message)
+	{
+		// Clear key 
+		if (substr($message, 0, 5) == 'lang:') {
+			$key = substr($key, 5);
+		} else {
+			return $message;
+		}
+		return Language::get(substr($message, 5));
 	}
 
 	/**
@@ -135,205 +352,6 @@ class Kernel
 			array_push($this->commandHistory, $command);	
 		}
 		return $command;
-	}
-
-	/**
-	* Ready
-	*
-	* This method listen new sub command.
-	* All libraries can use this method for listen to 
-	* specefic commands.
-	*
-	* @return string;
-	*/
-	public function ready()
-	{
-		// Cursor 
-		$this->_promptSub();
-		// Listening for new command from user
-		$handle = fopen ("php://stdin","r");
-		$command = trim(fgets($handle));
-		// Update command history
-		if (!in_array($command, $this->commandHistoryIgnores)) {
-			array_push($this->commandHistory, $command);	
-		}
-		return $command;
-	}
-
-	/**
-	* Solve Message
-	*
-	* If message have got `lang:` key in content
-	* then get language value from language file.
-	*
-	* @param  string $message
-	* @return null
-	*/
-	private static function _solveMessage($message)
-	{
-		// Clear key 
-		if (substr($message, 0, 5) == 'lang:') {
-			$key = substr($key, 5);
-		} else {
-			return $message;
-		}
-		return Language::get(substr($message, 5));
-	}
-
-	/**
-	* Write Error Message
-	*
-	* @param string $message
-	* @return null
-	*/
-	public static function error($message)
-	{	
-		if (Config::get('userErrorMessageStatus')) {
-			self::writeln('	'.self::_solveMessage($message), 'red');
-		}
-	}
-
-	/**
-	* Write Information Message
-	*
-	* @param string $message
-	* @return null
-	*/
-	public static function info($message)
-	{	
-		self::writeln('	'.self::_solveMessage($message), 'blue');
-	}
-
-	/**
-	* Write Success Message
-	*
-	* @param string $message
-	* @return null
-	*/
-	public static function success($message)
-	{	
-		self::writeln('	'.self::_solveMessage($message), 'green');
-	}
-
-	/**
-	* Write Warning Message
-	*
-	* @param string $message
-	* @return null
-	*/
-	public static function warning($message)
-	{	
-		self::writeln('	'.self::_solveMessage($message), 'brown');
-	}
-
-	/**
-	* Listener
-	*
-	* Command listener
-	*
-	* @return null
-	*/
-	private function _listener()
-	{
-		// Listener all the time
-		do {
-			// Waiting new command.
-			$command = '';
-			$command = $this->_command();
-
-			/**
-			* Checking command is local command
-			*/
-			if (method_exists($this, $command)) {
-				$this->{$command}();
-			} else if ($command != 'exit' && $command != '') {
-
-				// Get Commant Object
-				$operator = (object) $this->_getCommandClass($command);
-
-				// Write process result
-				$this->{$operator->type}($operator->message);
-				// Call method 
-				if ($operator->status == true) {
-					if (method_exists($operator->class, $operator->method)) {
-						$operator->class->{$operator->method}($operator->params);
-					} else {
-						// method not found
-						$this->error($this->_solveMessage('lang:methodNotFound'). " `$operator->method ");
-					}
-				} 
-				// Remove class from memory
-				unset($operator);
-			}
-		} while ($command != 'exit');
-		$this->_close();
-		exit(0);  
-	}
-
-	/**
-	* Get Command Class
-	*
-	* Find command libraries
-	*
-	* @param  string  $command
-	* @return boolean
-	*/
-	private function _getCommandClass($command) 
-	{	
-		// Checking comman structure
-		if (strpos($command, ':') === false) {
-			$command .= ':index';
-		} 
-
-		// Solving command
-		$this->command = explode(":", $command);
-		$activeClass = $this->command[0];
-		$activeMethod = $this->command[1];
-
-		// Solving parameter
-		$params = false;
-		if (strpos($activeMethod, ' ') !== false) {
-			$params = explode(' ', $activeMethod);
-			$activeMethod = $params[0];
-			unset($params[0]);
-			if (sizeof($params) == 1) {
-				$params = $params[1];
-			}
-		}
-
-		if (in_array($activeClass, $this->coreLibraries)) {
-			// Setting library path
-			$libraryPath = __DIR__.'/Libraries/';			
-		} else {
-			// Setting library path
-			$libraryPath = __DIR__.'/../Libraries/';			
-		}
-
-		// Library is exist?
-		if (file_exists($libraryPath.$activeClass.'.php')) {
-			return array(
-				'status' => true,
-				'class' => new Libraries\Sample(),
-				'method' => $activeMethod,
-				'params' => $params,
-				'type' => 'info',
-				'message' => 'lang:classLoad'
-				);
-		} else {
-			// Library not found
-			$returnMessage= 'lang:libraryNotFound';
-		}
-
-		// Return false result
-		return array(	
-			'status' => false,
-			'class' => false,
-			'method' => false,
-			'type' => 'error',
-			'params' => $params,
-			'message' => $returnMessage
-			);
-
 	}
 
 }
