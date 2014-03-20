@@ -26,6 +26,14 @@ class Language
 		);
 
 	/**
+	* Loaded 
+	*
+	* @var array
+	*/
+	public static $loaded = array(
+		);
+
+	/**
 	* Loaded Lang Values
 	*
 	* @var array
@@ -93,6 +101,7 @@ class Language
 			}
 			$lang = '';
 			require_once($directory.$fileName.'.php');
+			array_push(self::$loaded, $fileName);
 			$this->loadKeys($lang);
 		}
 
@@ -107,13 +116,21 @@ class Language
 	* @return boolean
 	*/
 	public static function load($fileName)
-	{
+	{	
+		// Check loaded before?
+		if (in_array($fileName, self::$loaded)) {
+			return true;
+		}
+		// Set language directory
 		$directory = __DIR__.'/../Language/'.self::$langCode.'/';
 		if (!file_exists($directory.$fileName.'.php')) {
 			return Loader::errorHandler(null, "Language file is missing: `$fileName.php` ");
 		}
+		// Load lang file
 		$lang = '';
+		array_push(self::$loaded, $fileName);
 		require_once($directory.$fileName.'.php');
+		// Set values
 		self::loadKeys($lang);
 		return true;
 	}
