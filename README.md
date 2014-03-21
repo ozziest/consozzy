@@ -33,7 +33,7 @@ $ php console.php
 
 Kendi yazacağınız kütüphaneler ile temel konsol uygulamasını genişletebilirsiniz.
 Bunun için *Libraries* klasörü altında dosya adı aynı olmak şartıyla aşağıdaki 
-şekilde bir class oluşturabilirsiniz. *(Libraries/Sample.php)*
+şekilde bir class oluşturabilirsiniz. *(Libraries/sample.php)*
 
 ```php
 namespace Ozziest\Consozzy\Libraries;

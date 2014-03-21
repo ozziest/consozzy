@@ -109,6 +109,8 @@ class Loader
 	*/
 	public static function errorHandler($no = 0, $str, $file = 0, $line = 0)
 	{
+		// Unit testing?
+		if (defined('PHPUNIT') && PHPUNIT === true) return;
 		if (self::$loaded == false) {
 			self::setError($str);
 		} else {

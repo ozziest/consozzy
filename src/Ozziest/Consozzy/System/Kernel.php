@@ -52,7 +52,7 @@ class Kernel extends Loader
 	*
 	* @var array
 	*/
-	private $coreLibraries = array(
+	private static $coreLibraries = array(
 		'set'
 		);
 
@@ -137,6 +137,7 @@ class Kernel extends Loader
 	*/
 	public static function write($message = '', $color = null)
 	{
+		if (defined('PHPUNIT') && PHPUNIT === true) return;
 		$message = Colors::get($message, $color);
 		print($message);
 	}
@@ -150,6 +151,7 @@ class Kernel extends Loader
 	*/
 	public static function writeln($message = '', $color = null)
 	{
+		if (defined('PHPUNIT') && PHPUNIT === true) return;
 		$message = Colors::get($message, $color);
 		print($message."\n");
 	}
@@ -264,7 +266,6 @@ class Kernel extends Loader
 				$this->{$operator->type}($operator->message);
 				// Call method 
 				if ($operator->status == true) {
-
 					// Check kernel method
 					if (method_exists($this, $operator->method)) {
 						// Kernel method error
@@ -295,13 +296,12 @@ class Kernel extends Loader
 	* @param  string  $command
 	* @return boolean
 	*/
-	private function _getCommandClass($command) 
+	public function _getCommandClass($command) 
 	{	
 		// Checking comman structure
 		if (strpos($command, ':') === false) {
 			$command .= ':index';
 		} 
-
 		// Solving command
 		$this->command = explode(":", $command);
 		$activeClass = $this->command[0];
@@ -318,14 +318,13 @@ class Kernel extends Loader
 			}
 		}
 
-		if (in_array($activeClass, $this->coreLibraries)) {
+		if (in_array($activeClass, self::$coreLibraries)) {
 			// Setting library path
 			$libraryPath = __DIR__.'/Core/';	
 		} else {
 			// Setting library path
 			$libraryPath = __DIR__.'/../Libraries/';
 		}
-
 		// Library is exist?
 		if (file_exists($libraryPath.$activeClass.'.php')) {
 			// Load Library

@@ -7,6 +7,6 @@
 	$loader = new Symfony\Component\ClassLoader\UniversalClassLoader();
 	$loader->registerNamespaces(array('Ozziest' => __DIR__.'/../../'));
 	$loader->register();
-	if (PHPUNIT !== true) {
+	if (!defined('PHPUNIT')) {
 		new Ozziest\Consozzy\System\Loader();				
 	}

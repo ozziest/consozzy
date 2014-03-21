@@ -151,7 +151,7 @@ class Language
 	}
 
 	/**
-	* Load Şanguage Keys
+	* Load Language Keys
 	*
 	* @param  array $keys
 	* @return null

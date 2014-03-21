@@ -89,4 +89,12 @@ class Sample extends System\Kernel
 		$temp = 7/0;
 	}
 
+	/**
+	* Command
+	*/
+	public function command()
+	{
+		$this->warning('Sample command.');
+	}
+
 }
