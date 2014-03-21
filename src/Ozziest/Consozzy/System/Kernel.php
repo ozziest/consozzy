@@ -174,7 +174,7 @@ class Kernel extends Loader
 		if (!in_array($command, $this->commandHistoryIgnores)) {
 			array_push($this->commandHistory, $command);	
 		}
-		return $command;
+		return strtolower($command);
 	}
 
 	/**
@@ -459,7 +459,7 @@ class Kernel extends Loader
 		if (!in_array($command, $this->commandHistoryIgnores)) {
 			array_push($this->commandHistory, $command);	
 		}
-		return $command;
+		return strtolower($command);
 	}
 
 }
