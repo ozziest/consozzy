@@ -2,6 +2,7 @@
 
 namespace Ozziest\Consozzy\System;
 
+
 /**
  * Loader
  *
@@ -52,9 +53,8 @@ class Loader
 	/**
 	* Construct
 	*/
-	public function __construct()
+	public function __construct($testStatus = false)
 	{
-
         /**
         * Checking CLI application
         */
@@ -75,7 +75,9 @@ class Loader
 		}
 		self::$kernel = new Kernel();
 		self::$loaded = true;
-		self::$kernel->_init();
+		if ($testStatus === false) {
+			self::$kernel->_init();			
+		}
 
 		//new Kernel();
 
@@ -87,7 +89,9 @@ class Loader
 			exit(self::$errorMessage);
 		}
 
-		echo "Console is closed! \n";
+		if ($testStatus === false) {
+			echo "Console is closed! \n";			
+		}
 
 	}
 

@@ -158,8 +158,10 @@ class Language
 	*/
 	public static function loadKeys($keys)
 	{
-		foreach ($keys as $key => $value) {
-			self::$lang[$key] = $value;
+		if (is_array($keys)) {
+			foreach ($keys as $key => $value) {
+				self::$lang[$key] = $value;
+			}			
 		}
 	}
 
