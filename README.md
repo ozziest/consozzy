@@ -15,6 +15,10 @@ To install through composer, simply put the following in your `composer.json` fi
 }
 ```
 
+```bash 
+$ composer install
+```
+
 ### Usage
 ```bash
 $ php console publisher:library:command:method
