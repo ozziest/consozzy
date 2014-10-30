@@ -1,0 +1,13 @@
+<?php 
+
+include "./vendor/autoload.php";
+
+$command = null;
+if (isset($argv[1])) {
+	$command = $argv[1];
+}
+
+$console = new Ozziest\Consozzy\Consozzy();
+$console->run($command);
+
+   

@@ -1,9 +1,21 @@
 {
- 	"require": {
-        "symfony/finder": "2.1.*",
-        "symfony/class-loader": "2.5.*@dev"
-    },
+    "name": "Consozzy",
+    "authors": [
+        {
+            "name": "Özgür Adem Işıklı",
+            "email": "i.ozguradem@gmail.com",
+            "role": "Creator & Designer"
+        }
+    ],
     "autoload": {
-        "psr-4": {"Acme\\": "src/"}
+        "classmap": [
+            "src"
+        ],
+        "psr-0": {
+            "Ozziest\\Console": "src/"
+        }
+    },
+    "require": {
+        "monolog/monolog": "1.11.*"
     }
 }
