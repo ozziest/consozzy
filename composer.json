@@ -1,5 +1,8 @@
 {
-    "name": "Consozzy",
+    "name": "ozziest/consozzy",
+    "description": "Simple console core for php console applications.",
+    "keywords": ["php", "console", "core"],
+    "license": "GPL",
     "authors": [
         {
             "name": "Özgür Adem Işıklı",
@@ -16,6 +19,6 @@
         }
     },
     "require": {
-        "monolog/monolog": "1.11.*"
+        "php": ">=5.4.0"
     }
 }
