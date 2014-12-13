@@ -3,6 +3,10 @@ Consozzy
 
 Consozzy is a simple console library for your console applications. It has got simple router for your library and class. 
 
+## Warning 
+
+This package is developed for just practice. I don't recommend for your real applications. You can use [symfony/console](http://symfony.com/doc/current/components/console/introduction.html) package.
+
 ## Installation
 
 To install through composer, simply put the following in your `composer.json` file:
